@@ -11,6 +11,8 @@ import { PG_POOL } from './database/database.provider';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('/api');
+
   if (process.env.NODE_ENV === 'development') {
     const res = await app.get(PG_POOL).query('SELECT current_database();');
     console.log('DB connected:', res.rows[0].current_database);

@@ -7,7 +7,6 @@ export class RedisService {
     private redis: Redis;
 
     constructor() {
-        console.log(`redis config: ${JSON.stringify(redisConfig)}`);
 
         this.redis = new Redis({
             host: redisConfig.host,

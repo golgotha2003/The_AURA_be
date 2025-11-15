@@ -1,6 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { Role } from 'src/user/enum/role.enum';
 import { RedisService } from 'src/redis/redis.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
@@ -17,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(req: Request,
     payload: any,
-  ): Promise<{ id: number; email: string; role: Role }> {
+  ): Promise<{ id: number; email: string; role: number }> {
     const storedToken = await this.redisService.getToken(payload.email, payload.deviceId);
     const token = req.headers['authorization'].split(' ')[1];
     if(storedToken !== token || !storedToken){

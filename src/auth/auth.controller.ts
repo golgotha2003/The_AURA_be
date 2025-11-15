@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
@@ -6,6 +13,8 @@ import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { VerifyOtpDto } from './dto/otp.dto';
 import { SendOtpDto } from 'src/otp/dto/send_otp.dto';
+import { ResetPasswordDto } from './dto/reset_password.dto';
+import { ForgetPasswordDto } from './dto/forget_password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -68,6 +77,28 @@ export class AuthController {
     return {
       success: message.success,
       message: message.message,
+    };
+  }
+
+  @Post('forget-password')
+  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto): Promise<any> {
+    return await this.authService.forgetPassword(forgetPasswordDto.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<any> {
+    if (resetPasswordDto.password !== resetPasswordDto.confirm_password) {
+      throw new BadRequestException('Mật khẩu và xác nhận mật khẩu không khớp');
+    }
+    const isReset = await this.authService.resetPassword(
+      resetPasswordDto.email,
+      resetPasswordDto.password,
+    );
+    return {
+      success: isReset,
+      data: 'Mật khẩu đã được cập nhật',
     };
   }
 }

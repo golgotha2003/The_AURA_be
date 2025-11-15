@@ -1,19 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsString } from "class-validator";
+import { IsBoolean, IsDate, IsIn, IsNumber, IsString } from "class-validator";
 
 export class UpdateUserDto {
-    @ApiProperty({
-        description: 'Mật khẩu mới',
-        example: '123456'
-    })
-    password: string;
-
-    @ApiProperty({
-        description: 'Trạng thái tài khoản',
-        example: true
-    })
-    @IsBoolean()
-    is_active: boolean;
 
     @ApiProperty({
         description: 'Số điện thoại',
@@ -27,12 +15,20 @@ export class UpdateUserDto {
         example: 'John Doe'
     })
     @IsString()
-    name: string;
-    
+    full_name: string;
+
     @ApiProperty({
-        description: 'Trạng thái khóa tài khoản',
-        example: true
+        description: 'Ngày sinh',
+        example: '2000-01-01'
     })
-    @IsBoolean()
-    is_locked: boolean;
+    @IsDate()
+    birthday: Date;
+
+    @ApiProperty({
+        description: 'Giới tính',
+        example: 0
+    })
+    @IsNumber()
+    @IsIn([0,1], {message: 'Giới tính chỉ được là 0(Nam) hoặc 1(Nữ)'})
+    gender : number;
 }

@@ -11,7 +11,7 @@ export class UserResponseDto {
     description: 'Tên của người dùng',
     example: 'John Doe',
   })
-  name: string;
+  full_name: string;
 
   @ApiProperty({
     description: 'Email của người dùng',
@@ -24,6 +24,36 @@ export class UserResponseDto {
     example: '0909090909',
   })
   phone_number: string;
+
+  @ApiProperty({
+    description: 'Ngày sinh của người dùng',
+    example: '2000-01-01',
+  })
+  birthday: Date;
+
+  @ApiProperty({
+    description: 'Giới tính của người dùng',
+    example: 0,
+  })
+  gender: number;
+
+  @ApiProperty({
+    description: 'Vai trò của người dùng',
+    example: 1,
+  })
+  role: number;
+
+  @ApiProperty({
+    description: 'Trạng thái khóa tài khoản',
+    example: true,
+  })
+  is_locked: boolean;
+
+  @ApiProperty({
+    description: 'Trạng thái xác thực của người dùng',
+    example: true,
+  })
+  is_verified: boolean;
 
   @ApiProperty({
     description: 'Ngày tạo tài khoản',

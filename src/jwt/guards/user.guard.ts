@@ -1,0 +1,14 @@
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+
+@Injectable()
+export class UserGuard implements CanActivate {
+
+    canActivate(context: ExecutionContext): boolean {
+
+        const request = context.switchToHttp().getRequest();
+        const user = request.user;
+        const userInUrl = +request.params.id;
+
+        return user.id === userInUrl;
+    }
+}

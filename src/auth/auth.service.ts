@@ -1,29 +1,27 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { LoginDto } from 'src/auth/dto/login.dto';
-import { Role } from 'src/user/enum/role.enum';
 import { JwtService } from 'src/jwt/jwt.service';
 import { RedisService } from 'src/redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { OtpService } from 'src/otp/otp.service';
 import { AuthType } from './enum/auth.enum';
-import { UpdateUserDto } from 'src/user/dto/update_user.dto';
+import { AuthRepository } from './auth.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private userService: UserService,
         private jwtService: JwtService,
         private redisService: RedisService,
-        private otpService: OtpService
+        private otpService: OtpService,
+        private authRepository: AuthRepository
     ) {}
 
     async register(registerDto: RegisterDto): Promise<any>{
         const hashPassword = await bcrypt.hash(registerDto.password, 10);
         registerDto.password = hashPassword;
-        await this.userService.create(registerDto);
+        await this.authRepository.save(registerDto);
         await this.sendOtp(registerDto.email, AuthType.REGISTER);
         return {
             success: true,
@@ -36,12 +34,12 @@ export class AuthService {
             throw new UnauthorizedException('Email là bắt buộc');
         }
         
-        const user = await this.userService.findOne(loginDto.email);
+        const user = await this.authRepository.findOne(loginDto.email);
         if(!user){
             throw new NotFoundException('Người dùng không tồn tại');
         }
         
-        const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+        const isPasswordValid = await bcrypt.compare(loginDto.password, user?.password);
         if(!isPasswordValid){
             throw new UnauthorizedException('Mật khẩu không chính xác');
         }
@@ -50,7 +48,7 @@ export class AuthService {
             throw new UnauthorizedException('Tài khoản đã bị khóa, vui lòng liên hệ quản trị viên');
         }
 
-        if(!user.is_active){
+        if(!user.is_verified){
             throw new UnauthorizedException('Tài khoản chưa được xác thực');
         }
         
@@ -58,7 +56,7 @@ export class AuthService {
         const payload = {
             id: user.id, 
             email: user.email, 
-            role: user.role || Role.GUEST,
+            role: user.role,
             deviceId: deviceId
         };
 
@@ -78,7 +76,7 @@ export class AuthService {
     }
 
     async forgetPassword(email: string){
-        const user = await this.userService.findOne(email);
+        const user = await this.authRepository.findOne(email);
         if(!user){
             throw new NotFoundException('Người dùng không tồn tại');
         }
@@ -86,13 +84,26 @@ export class AuthService {
         return message;
     }
 
+    async resetPassword(email: string, password: string){
+        const user = await this.authRepository.findOne(email);
+        if(!user){
+            throw new NotFoundException('Người dùng không tồn tại');
+        }
+        const hashPassword = await bcrypt.hash(password, 10);
+        const result = await this.authRepository.updatePassword(email, hashPassword);
+        if(!result){
+            throw new NotFoundException('Người dùng không tồn tại');
+        }
+        return true;
+    }
+
     async sendOtp(email: string, type: string): Promise<any>{
-        const user = await this.userService.findOne(email);
+        const user = await this.authRepository.findOne(email);
         if(!user){
             throw new NotFoundException('Người dùng không tồn tại');
         }
         if(type === AuthType.REGISTER){
-            if(user.is_active){
+            if(user.is_verified){
                 return {
                     success: false,
                     message: 'Tài khoản đã được xác thực'
@@ -108,8 +119,8 @@ export class AuthService {
 
     async verifyOtp(email: string, otp: string, type: string): Promise<any>{
         const isVerified = await this.otpService.verifyOtp(email, otp, type);
-        if(isVerified){
-            await this.updateAccount(email, new UpdateUserDto(), type, null);
+        if(isVerified && type === AuthType.REGISTER){
+            await this.updateAccount(email, type, null);
         }
         return {
             success: isVerified,
@@ -117,21 +128,30 @@ export class AuthService {
         };
     }
 
-    async updateAccount(email: string, updateUserDto: UpdateUserDto, type: string, password: string | null): Promise<any>{
+    async updateAccount(email: string, type: string, password: string | null): Promise<any>{
         if(type === AuthType.REGISTER){
-            updateUserDto.is_active = true;
+            const success = await this.authRepository.verifyAccount(email);
+            if(!success){
+                throw new NotFoundException('Người dùng không tồn tại');
+            }
+            return {
+                success: true,
+                message: 'Tài khoản đã được xác thực'
+            };
         }
         if(type === AuthType.FORGET_PASSWORD){
             if(!password){
                 throw new UnauthorizedException('Mật khẩu là bắt buộc');
             }
             const hashPassword = await bcrypt.hash(password, 10);
-            updateUserDto.password = hashPassword;
+            const success = await this.authRepository.updatePassword(email, hashPassword);
+            if(!success){
+                throw new NotFoundException('Người dùng không tồn tại');
+            }
+            return {
+                success: true,
+                message: 'Mật khẩu đã được cập nhật'
+            };
         }
-        await this.userService.update(email, updateUserDto);
-        return {
-            success: true,
-            message: 'Tài khoản đã được cập nhật'
-        };
     }
 }
