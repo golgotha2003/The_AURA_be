@@ -8,6 +8,8 @@ import { JwtModule } from './jwt/jwt.module';
 import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
 import { DatabaseModule } from './database/database.module';
+import { BranchModule } from './branch/branch.module';
+import { FloorModule } from './floor/floor.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { DatabaseModule } from './database/database.module';
     JwtModule,
     RedisModule,
     EmailModule,
+    BranchModule,
+    FloorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
