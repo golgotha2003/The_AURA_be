@@ -8,8 +8,8 @@ export class FloorRepository {
     constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
 
     async create(floor: FloorRequestDto): Promise<FloorEntity> {
-        const query = 'INSERT INTO floors (name, description, branch) VALUES ($1, $2, $3) RETURNING *';
-        const result = await this.pool.query(query, [floor.name, floor.description, floor.branch]);
+        const query = 'INSERT INTO floors (name, description, branch_id) VALUES ($1, $2, $3) RETURNING *';
+        const result = await this.pool.query(query, [floor.name, floor.description, floor.branch_id]);
         return result.rows[0];
     }
 
@@ -32,8 +32,8 @@ export class FloorRepository {
     }
 
     async update(id: number, floor: FloorRequestDto): Promise<FloorEntity | null> {
-        const query = 'UPDATE floors SET name = $1, description = $2, branch = $3, updated_at = NOW() WHERE id = $4 AND is_closed = FALSE RETURNING *';
-        const result = await this.pool.query(query, [floor.name, floor.description, floor.branch, id]);
+        const query = 'UPDATE floors SET name = $1, description = $2, branch_id = $3, updated_at = NOW() WHERE id = $4 AND is_closed = FALSE RETURNING *';
+        const result = await this.pool.query(query, [floor.name, floor.description, floor.branch_id, id]);
         return result.rows[0] || null;
     }
 
@@ -44,7 +44,7 @@ export class FloorRepository {
     }
 
     async deleteAllByBranch(branch: number): Promise<boolean> {
-        const query = 'UPDATE floors SET is_closed = TRUE, updated_at = NOW() WHERE branch = $1 AND is_closed = FALSE RETURNING *';
+        const query = 'UPDATE floors SET is_closed = TRUE, updated_at = NOW() WHERE branch_id = $1 AND is_closed = FALSE RETURNING *';
         const result = await this.pool.query(query, [branch]);
         if (result.rowCount === 0) {
             return false;
@@ -53,7 +53,7 @@ export class FloorRepository {
     }
 
     async findByBranch(branch: number): Promise<FloorEntity[]> {
-        const query = 'SELECT * FROM floors WHERE branch = $1 AND is_closed = FALSE';
+        const query = 'SELECT * FROM floors WHERE branch_id = $1 AND is_closed = FALSE';
         const result = await this.pool.query(query, [branch]);
         return result.rows;
     }

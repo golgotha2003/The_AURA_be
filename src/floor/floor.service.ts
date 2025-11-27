@@ -9,12 +9,12 @@ export class FloorService {
     constructor(private readonly floorRepository: FloorRepository, private readonly branchService: BranchService) {}
 
     async create(floor: FloorRequestDto): Promise<FloorEntity> {
-        const checkBranch = await this.branchService.findOne(floor.branch);
+        const checkBranch = await this.branchService.findOne(floor.branch_id);
         if (checkBranch == null || checkBranch.is_closed) {
             throw new NotFoundException('Chi nhánh không tồn tại hoặc đã đóng cửa');
         }
         const checkFloor = await this.floorRepository.findByName(floor.name);
-        if (checkFloor != null && checkFloor.branch == floor.branch) {
+        if (checkFloor != null && checkFloor.branch_id == floor.branch_id) {
             throw new BadRequestException('Tầng đã tồn tại');
         }
         const newFloor = await this.floorRepository.create(floor);
@@ -40,7 +40,7 @@ export class FloorService {
     }
 
     async update(id: number, floor: FloorRequestDto): Promise<FloorEntity | null> {
-        const checkBranch = await this.branchService.findOne(floor.branch);
+        const checkBranch = await this.branchService.findOne(floor.branch_id);
         if (checkBranch == null || checkBranch.is_closed) {
             throw new NotFoundException('Chi nhánh không tồn tại hoặc đã đóng cửa');
         }

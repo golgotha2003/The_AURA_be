@@ -39,10 +39,10 @@ export class UserEntity {
   @Column({nullable: false, name: 'gender_id'})
   @IsNumber()
   @IsIn([0,1], {message: 'Giới tính chỉ được là 0(Nam) hoặc 1(Nữ)'})
-  gender: number;
+  gender_id: number;
 
   @Column({nullable: false, name: 'role_id'})
-  role: number;
+  role_id: number;
 
   @Column({default: false})
   is_locked: boolean;

@@ -4,6 +4,7 @@ import { AuthModule } from "src/auth/auth.module";
 import { UserModule } from "src/user/user.module";
 import { BranchModule } from "src/branch/branch.module";
 import { FloorModule } from "src/floor/floor.module";
+import { RoomModule } from "src/room/room.module";
 
 export function setupSwagger(app: INestApplication) {
 
@@ -58,4 +59,17 @@ export function setupSwagger(app: INestApplication) {
         .build();
     const floorsDocument = SwaggerModule.createDocument(app, floorsConfig, { include: [FloorModule] });
     SwaggerModule.setup('floors/docs', app, floorsDocument);
+
+    const roomsConfig = new DocumentBuilder()
+        .setTitle('Rooms API')
+        .setDescription('API documentation for the Rooms project')
+        .setVersion('1.0')
+        .addBearerAuth({
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+        }, 'access-token')
+        .build();
+    const roomsDocument = SwaggerModule.createDocument(app, roomsConfig, { include: [RoomModule] });
+    SwaggerModule.setup('rooms/docs', app, roomsDocument);
 }

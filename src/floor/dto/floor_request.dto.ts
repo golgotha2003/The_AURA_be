@@ -24,5 +24,5 @@ export class FloorRequestDto {
     })
     @IsNumber()
     @IsNotEmpty()
-    branch: number;
+    branch_id: number;
 }

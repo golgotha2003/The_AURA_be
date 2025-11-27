@@ -13,7 +13,7 @@ export class BranchEntity {
     address: string;
 
     @Column()
-    city: number;
+    city_id: number;
 
     @Column({default: 0})
     rating_avg: number;

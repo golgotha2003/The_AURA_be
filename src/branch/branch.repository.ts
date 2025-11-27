@@ -14,7 +14,7 @@ export class BranchRepository{
         if(city.rowCount === 0) {
             throw new NotFoundException('Thành phố không tồn tại');
         }
-        const query = 'INSERT INTO branches (name, address, city) VALUES ($1, $2, $3) RETURNING *';
+        const query = 'INSERT INTO branches (name, address, city_id) VALUES ($1, $2, $3) RETURNING *';
         const result = await this.pool.query(query, [branch.name, branch.address, city.rows[0].code]);
         return result.rows[0];
     }
@@ -36,7 +36,7 @@ export class BranchRepository{
         if(city.rowCount === 0) {
             throw new NotFoundException('Thành phố không tồn tại');
         }
-        const query = 'UPDATE branches SET name = $1, address = $2, city = $3, updated_at = NOW() WHERE id = $4 RETURNING *';
+        const query = 'UPDATE branches SET name = $1, address = $2, city_id = $3, updated_at = NOW() WHERE id = $4 RETURNING *';
         const result = await this.pool.query(query, [branch.name, branch.address, city.rows[0].code, id]);
         return result.rows[0];
     }

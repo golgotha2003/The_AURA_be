@@ -35,13 +35,13 @@ export class UserResponseDto {
     description: 'Giới tính của người dùng',
     example: 0,
   })
-  gender: number;
+  gender_id: number;
 
   @ApiProperty({
     description: 'Vai trò của người dùng',
     example: 1,
   })
-  role: number;
+  role_id: number;
 
   @ApiProperty({
     description: 'Trạng thái khóa tài khoản',

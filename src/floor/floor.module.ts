@@ -9,5 +9,6 @@ import { DatabaseModule } from 'src/database/database.module';
   imports: [BranchModule, DatabaseModule],
   controllers: [FloorController],
   providers: [FloorService, FloorRepository],
+  exports: [FloorService],
 })
 export class FloorModule {}

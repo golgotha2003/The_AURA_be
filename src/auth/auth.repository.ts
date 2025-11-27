@@ -17,7 +17,7 @@ export class AuthRepository {
       registerDto.password,
       registerDto.phone_number,
       registerDto.birthday,
-      registerDto.gender,
+      registerDto.gender_id,
     ]);
     return result.rows[0];
   }

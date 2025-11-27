@@ -24,8 +24,8 @@ export class UserService {
         if(updateUserDto.birthday){
             user.birthday = updateUserDto.birthday;
         }
-        if(updateUserDto.gender){
-            user.gender = updateUserDto.gender;
+        if(updateUserDto.gender_id){
+            user.gender_id = updateUserDto.gender_id;
         }
         user.updated_at = new Date();
         const result = await this.userRepository.update(user);
@@ -35,8 +35,8 @@ export class UserService {
         userResponse.email = result.email;
         userResponse.phone_number = result.phone_number;
         userResponse.birthday = result.birthday;
-        userResponse.gender = result.gender;
-        userResponse.role = result.role;
+        userResponse.gender_id = result.gender_id;
+        userResponse.role_id = result.role_id;
         userResponse.is_verified = result.is_verified;
         userResponse.is_locked = result.is_locked;
         userResponse.created_at = result.created_at;
@@ -55,8 +55,8 @@ export class UserService {
         userResponse.email = user.email;
         userResponse.phone_number = user.phone_number;
         userResponse.birthday = user.birthday;
-        userResponse.gender = user.gender;
-        userResponse.role = user.role;
+        userResponse.gender_id = user.gender_id;
+        userResponse.role_id = user.role_id;
         userResponse.is_verified = user.is_verified;
         userResponse.is_locked = user.is_locked;
         userResponse.created_at = user.created_at;
@@ -75,8 +75,8 @@ export class UserService {
         userResponse.email = user.email;
         userResponse.phone_number = user.phone_number;
         userResponse.birthday = user.birthday;
-        userResponse.gender = user.gender;
-        userResponse.role = user.role;
+        userResponse.gender_id = user.gender_id;
+        userResponse.role_id = user.role_id;
         userResponse.is_verified = user.is_verified;
         userResponse.is_locked = user.is_locked;
         userResponse.created_at = user.created_at;
@@ -93,8 +93,8 @@ export class UserService {
             userResponse.email = user.email;
             userResponse.phone_number = user.phone_number;
             userResponse.birthday = user.birthday;
-            userResponse.gender = user.gender;
-            userResponse.role = user.role;
+            userResponse.gender_id = user.gender_id;
+            userResponse.role_id = user.role_id;
             userResponse.is_verified = user.is_verified;
             userResponse.is_locked = user.is_locked;
             userResponse.created_at = user.created_at;
@@ -124,8 +124,8 @@ export class UserService {
         userResponse.email = result.email;
         userResponse.phone_number = result.phone_number;
         userResponse.birthday = result.birthday;
-        userResponse.gender = result.gender;
-        userResponse.role = result.role;
+        userResponse.gender_id = result.gender_id;
+        userResponse.role_id = result.role_id;
         userResponse.is_verified = result.is_verified;
         userResponse.is_locked = result.is_locked;
         userResponse.created_at = result.created_at;

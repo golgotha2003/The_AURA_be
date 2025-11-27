@@ -30,5 +30,5 @@ export class UpdateUserDto {
     })
     @IsNumber()
     @IsIn([0,1], {message: 'Giới tính chỉ được là 0(Nam) hoặc 1(Nữ)'})
-    gender : number;
+    gender_id: number;
 }

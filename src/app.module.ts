@@ -10,6 +10,7 @@ import { EmailModule } from './email/email.module';
 import { DatabaseModule } from './database/database.module';
 import { BranchModule } from './branch/branch.module';
 import { FloorModule } from './floor/floor.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FloorModule } from './floor/floor.module';
     EmailModule,
     BranchModule,
     FloorModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -12,7 +12,7 @@ export class FloorEntity {
     description: string;
 
     @Column()
-    branch: number;
+    branch_id: number;
 
     @Column()
     is_closed: boolean;
