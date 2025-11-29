@@ -1,38 +1,55 @@
 import { UserEntity } from './entities/user.entity';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Pool } from 'pg';
 import { PG_POOL } from 'src/database/database.provider';
 
 @Injectable()
-export class UserRepository{
+export class UserRepository {
   constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
 
   async findOne(email: string): Promise<UserEntity | null> {
-    const query = 'SELECT * FROM "users" WHERE email = $1 LIMIT 1';
-    const result = await this.pool.query(query, [email]);
-    if (result.rows.length === 0) {
-      return null;
+    try {
+      const query = 'SELECT * FROM "users" WHERE email = $1 LIMIT 1';
+      const result = await this.pool.query(query, [email]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      throw new InternalServerErrorException('Lỗi khi tìm kiếm người dùng');
     }
-    return result.rows[0];
   }
 
   async findOneById(id: number): Promise<UserEntity | null> {
-    const query = 'SELECT * FROM "users" WHERE id = $1 LIMIT 1';
-    const result = await this.pool.query(query, [id]);
-    if (result.rows.length === 0) {
-      return null;
+    try {
+      const query = 'SELECT * FROM "users" WHERE id = $1 LIMIT 1';
+      const result = await this.pool.query(query, [id]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      throw new InternalServerErrorException('Lỗi khi tìm kiếm người dùng');
     }
-    return result.rows[0];
   }
 
   async findAll(): Promise<UserEntity[]> {
-    const query = 'SELECT * FROM "users"';
-    const result = await this.pool.query(query);
-    return result.rows;
+    try {
+      const query = 'SELECT * FROM "users"';
+      const result = await this.pool.query(query);
+      return result.rows;
+    } catch (error) {
+      throw new InternalServerErrorException('Lỗi khi tìm kiếm người dùng');
+    }
   }
 
   async update(user: UserEntity): Promise<UserEntity> {
-    const query = `UPDATE "users" 
+    try {
+      const query = `UPDATE "users" 
                     SET 
                         full_name = COALESCE($1, full_name), 
                         phone_number = COALESCE($2, phone_number), 
@@ -45,27 +62,38 @@ export class UserRepository{
                         updated_at = COALESCE($9, updated_at) 
                     WHERE id = $10
                     RETURNING *`;
-    const result = await this.pool.query(query, [
-      user.full_name,
-      user.phone_number,
-      user.birthday,
-      user.gender_id,
-      user.is_verified,
-      user.is_locked,
-      user.role_id,
-      user.created_at,
-      user.updated_at,
-      user.id,
-    ]);
-    return result.rows[0];
+      const result = await this.pool.query(query, [
+        user.full_name,
+        user.phone_number,
+        user.birthday,
+        user.gender_id,
+        user.is_verified,
+        user.is_locked,
+        user.role_id,
+        user.created_at,
+        user.updated_at,
+        user.id,
+      ]);
+      return result.rows[0];
+    } catch (error) {
+      throw new InternalServerErrorException('Lỗi khi cập nhật người dùng');
+    }
   }
 
-  async changePassword(id: number, password: string): Promise<UserEntity | null> {
-    const query = 'UPDATE "users" SET password = $1, updated_at = NOW() WHERE id = $2 RETURNING *';
-    const result = await this.pool.query(query, [password, id]);
-    if (result.rows.length === 0) {
-      return null;
+  async changePassword(
+    id: number,
+    password: string,
+  ): Promise<UserEntity | null> {
+    try {
+      const query =
+        'UPDATE "users" SET password = $1, updated_at = NOW() WHERE id = $2 RETURNING *';
+      const result = await this.pool.query(query, [password, id]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      throw new InternalServerErrorException('Lỗi khi thay đổi mật khẩu');
     }
-    return result.rows[0];
   }
 }
